@@ -1,0 +1,4 @@
+problems to fix: 
+
+1. Positioning the snake's new tail after it eats food (The current logic has faults): Fixed
+2. The food bar should decrease after the bonus food appears
