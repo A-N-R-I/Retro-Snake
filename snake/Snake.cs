@@ -7,13 +7,13 @@ public class Snake
     const ConsoleColor bodyColor = ConsoleColor.Yellow;
 
     // Vertical or horizontal path
-    public enum Trajectory
+    public enum Path
     {
         Horizontal = 0,
         Vertical = 1
     }
 
-    // Positive or negative direction towards the chosen trajectory
+    // Positive or negative direction towards the chosen Path
     public enum Direction
     {
         Positive = 1,
@@ -21,7 +21,7 @@ public class Snake
     }
 
 
-    public Trajectory _Trajectory;
+    public Path _Path;
     public Direction _Direction;
 
     public Vector2 VerticalBounds { get; set; }
@@ -32,18 +32,12 @@ public class Snake
 
     public Vector2 Head
     {
-        get
-        {
-            return BodyCoordinates.Last();
-        }
+        get { return BodyCoordinates.Last(); }
     }
 
     public Vector2 Tail
     {
-        get
-        {
-            return BodyCoordinates.First();
-        }
+        get { return BodyCoordinates.First(); }
     }
 
 
@@ -59,21 +53,21 @@ public class Snake
         var random = GameApp.Instance.Randomizer;
 
         // Determine how the snake initailly appears at in the grid
-        _Trajectory = (Trajectory)(random.Next() % 2);
+        _Path = (Path)(random.Next() % 2);
 
         int x;
         int y;
         
-        _Trajectory = Trajectory.Vertical;
+        _Path = Path.Vertical;
 
         // The snake appears vertically
-        if (_Trajectory == Trajectory.Vertical)
+        if (_Path == Path.Vertical)
         {
-            x = GameApp.Instance.GridPosition.X + (random.Next() % GameApp.Instance.GridSize.X) + 1;
+            x = (random.Next() % GameApp.Instance.GridSize.X) + 1;
             // Documentation - 
             if (x % 2 == 0) x = x + 1;
 
-            y = GameApp.Instance.GridPosition.Y;
+            y = 0;
 
             BodyCoordinates.AddLast(new Vector2(x, y + 1));
             BodyCoordinates.AddLast(new Vector2(x, y + 2));
@@ -82,20 +76,20 @@ public class Snake
         // The snake appears horizontally
         else
         {
-            x = GameApp.Instance.GridPosition.X;
-            y = GameApp.Instance.GridPosition.Y + (random.Next() % GameApp.Instance.GridSize.Y) + 1;
+            x = 0;
+            y = (random.Next() % GameApp.Instance.GridSize.Y) + 1;
 
             BodyCoordinates.AddLast(new Vector2(x + 1, y));
             BodyCoordinates.AddLast(new Vector2(x + 3, y));
             BodyCoordinates.AddLast(new Vector2(x + 5, y));
         }
 
-        // Snake will always start at a positive direction towards a chosen trajectory
+        // Snake will always start at a positive direction towards a chosen Path
         _Direction = Direction.Positive;
 
         // Display the snake
         foreach (var coord in BodyCoordinates)
-            GameApp.Instance.Print(body, coord.X, coord.Y, bodyColor);
+            GameApp.Instance.Display(body, coord.X, coord.Y, bodyColor);
     }
 
 
@@ -107,20 +101,20 @@ public class Snake
         // Remove the old tail (By default it is removed)
         if (eraseTail) 
         {
-            GameApp.Instance.Print(" ", tail.X, tail.Y);
+            GameApp.Instance.Display(" ", tail.X, tail.Y);
             BodyCoordinates.RemoveFirst();
         }
 
         if (!CollidesWithBounds())
         {
-            if (_Trajectory == Trajectory.Vertical)
+            if (_Path == Path.Vertical)
                 head.Y += (int)_Direction;
             else
                 head.X += (int)_Direction * 2;
         }
         else
         {
-            if (_Trajectory == Trajectory.Vertical)
+            if (_Path == Path.Vertical)
                 head.Y = (_Direction == Direction.Positive)? VerticalBounds.X : VerticalBounds.Y;
             else
                 head.X = (_Direction == Direction.Positive)? HorizontalBounds.X : HorizontalBounds.Y;
@@ -128,7 +122,7 @@ public class Snake
 
         // Add the new head
         BodyCoordinates.AddLast(head);
-        GameApp.Instance.Print(body, head.X, head.Y, bodyColor);
+        GameApp.Instance.Display(body, head.X, head.Y, bodyColor);
         Console.WriteLine(BodyCoordinates.Count);
     }
 
@@ -162,7 +156,7 @@ public class Snake
             newTail.Y = VerticalBounds.X + 1;
 
         BodyCoordinates.AddFirst(newTail);
-        GameApp.Instance.Print(body, newTail.X, newTail.Y, bodyColor);
+        GameApp.Instance.Display(body, newTail.X, newTail.Y, bodyColor);
     }
 
 
@@ -181,8 +175,13 @@ public class Snake
 
     private bool CollidesWithBounds()
     {
-        return (_Trajectory == Trajectory.Vertical)? 
+        return (_Path == Path.Vertical)? 
             _Direction == Direction.Negative && Head.Y == VerticalBounds.X || (_Direction == Direction.Positive && Head.Y == VerticalBounds.Y) : 
             _Direction == Direction.Negative && Head.X == HorizontalBounds.X || (_Direction == Direction.Positive && Head.X == HorizontalBounds.Y);
+    }
+
+    public void Reset()
+    {
+        BodyCoordinates.Clear();
     }
 }
