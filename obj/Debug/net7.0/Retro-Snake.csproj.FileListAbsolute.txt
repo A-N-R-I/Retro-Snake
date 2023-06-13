@@ -1,0 +1,15 @@
+C:\Users\user\Development\CS\Retro-Snake\bin\Debug\net7.0\Retro-Snake.exe
+C:\Users\user\Development\CS\Retro-Snake\bin\Debug\net7.0\Retro-Snake.deps.json
+C:\Users\user\Development\CS\Retro-Snake\bin\Debug\net7.0\Retro-Snake.runtimeconfig.json
+C:\Users\user\Development\CS\Retro-Snake\bin\Debug\net7.0\Retro-Snake.dll
+C:\Users\user\Development\CS\Retro-Snake\bin\Debug\net7.0\Retro-Snake.pdb
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\Retro-Snake.csproj.AssemblyReference.cache
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\Retro-Snake.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\Retro-Snake.AssemblyInfoInputs.cache
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\Retro-Snake.AssemblyInfo.cs
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\Retro-Snake.csproj.CoreCompileInputs.cache
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\Retro-Snake.dll
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\refint\Retro-Snake.dll
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\Retro-Snake.pdb
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\Retro-Snake.genruntimeconfig.cache
+C:\Users\user\Development\CS\Retro-Snake\obj\Debug\net7.0\ref\Retro-Snake.dll

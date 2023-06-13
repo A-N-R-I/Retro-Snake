@@ -1,0 +1,22 @@
+======================================================== DOCUMENTATION ==============================================================
+SNAKE v.1.0
+
+
+
+1. The width of the console window MUST be odd:
+
+The reason for this is because of how console are when they print characters. Printing characters on the same line has no spacing,  
+unless you print a space character. But there is naturally a line spacing when printing characters on different lines. This means  
+That when the snake moves vertically there would be spacing between the body parts, but no spacing during horizontal movements. If  
+left like so, the snake's movement, overall, would look unsymetrical. The solution I employed is to give a spacing between between  
+the body parts when the snake moves horizontally. This way the horizontal and vertical movements looks the same.
+    By spacing body parts during horizontal movement, it meant that the snakes's body parts would either appear at odd X coordinate  
+values or at even X coordinate values. I chose to go with even X coordinate values. If the intention is to make the snake reach the  
+extreme horizontal ends of the window when moving (0, and Console.WindowWidth - 1), then the window widht MUST be odd. This is  
+because the left extreme end is 0 and given that the snake is to reach the right extreme end (Console.WindowWidth - 1), the console  
+window then must be of odd with, so that one less than the width can then be even. In fact, it is because of this latter fact that  
+I even decided to make the body parts placed at even coordinates to begin with. 
+    Making the width even would cause the game logic to be distorted and would eventually lead to a buffer overflow of the window,  
+as the snake's movement logic is built under the assumption that the width of the console window would be odd, so the snake can reach  
+the extreme horizontal ends.
+

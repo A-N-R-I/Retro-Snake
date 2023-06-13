@@ -30,8 +30,8 @@ public class NewGameScene : Scene
         snake = new Snake();
 
         // Where the snake is not allowed to go beyond or at the point where it spawns at the opposite direction
-        snake.VerticalBounds =  new Vector2(1, GameApp.Instance.GridSize.Y);
-        snake.HorizontalBounds = new Vector2(1, GameApp.Instance.GridSize.X);
+        snake.VerticalBounds =  new Vector2(0, Console.WindowHeight - 3);
+        snake.HorizontalBounds = new Vector2(0, Console.WindowWidth - 1);
 
         ResetFoodBar();
         GenerateFood();
@@ -142,14 +142,14 @@ public class NewGameScene : Scene
         do
         {
             foodPosition = new Vector2(0, 0);
-            foodPosition.X = (random.Next() % GameApp.Instance.GridSize.X) + 1;
+            foodPosition.X = (random.Next() % Console.WindowWidth); // Range is between 0 and Console.WindowWidth - 1;
            
-            if (foodPosition.X % 2 == 0) foodPosition.X = foodPosition.X + 1;
+            if (foodPosition.X % 2 != 0) foodPosition.X = foodPosition.X + 1;
 
-            foodPosition.Y = (random.Next() % GameApp.Instance.GridSize.Y) + 1;
+            foodPosition.Y = (random.Next() % (Console.WindowHeight - 2));    // -2, So that the range will be between 0 and Console.WindowHeight - 3
         } 
         while (snake.BodyCoordinates.Contains(foodPosition));
-
+        
         // Display new food
         GameApp.Instance.Display(!foodIsBig? foodNormal : foodBig, foodPosition.X, foodPosition.Y, !foodIsBig? foodNormalColor : foodBigColor);
     }
@@ -157,39 +157,39 @@ public class NewGameScene : Scene
 
     void UpdateScore()
     {
-        GameApp.Instance.Display(score, GameApp.Instance.ScoreGridPosition.X + GameApp.Instance.ScoreGridSize.X/2 - $"{score}".Length/2, GameApp.Instance.ScoreGridPosition.Y + 3, ConsoleColor.Green);
+
     }
 
     
     void IncreaseFoodBar()
     {
-        if (foodEatCount % 5 != 0)
-            GameApp.Instance.Display("__", GameApp.Instance.FoodBarGridPosition.X + 2*(foodEatCount % 5) - 1 , GameApp.Instance.FoodBarGridPosition.Y + 3, ConsoleColor.Red);
+        // if (foodEatCount % 5 != 0)
+        //     GameApp.Instance.Display("__", GameApp.Instance.FoodBarGridPosition.X + 2*(foodEatCount % 5) - 1 , GameApp.Instance.FoodBarGridPosition.Y + 3, ConsoleColor.Red);
     }
 
 
     void CountdownFoodBarTimer()
     {
-        // Display the elapsed time
-        GameApp.Instance.Display($" {(bigFoodTimerCountdown/1000.0):0.00}sec ", GameApp.Instance.FoodBarGridPosition.X + 1, GameApp.Instance.FoodBarGridPosition.Y + 3, bigFoodTimerCountdown >= 2000? ConsoleColor.Green : ConsoleColor.Red);
-        if (bigFoodTimerCountdown <= 0)
-        {
-            bigFoodTimerCountdown = bigFoodTimerLimit;
+        // // Display the elapsed time
+        // GameApp.Instance.Display($" {(bigFoodTimerCountdown/1000.0):0.00}sec ", GameApp.Instance.FoodBarGridPosition.X + 1, GameApp.Instance.FoodBarGridPosition.Y + 3, bigFoodTimerCountdown >= 2000? ConsoleColor.Green : ConsoleColor.Red);
+        // if (bigFoodTimerCountdown <= 0)
+        // {
+        //     bigFoodTimerCountdown = bigFoodTimerLimit;
 
-            // Erase the big food and generate a new, normal food
-            GameApp.Instance.Display(" ",foodPosition.X, foodPosition.Y);
-            GenerateFood();
-            ResetFoodBar();
-        }
+        //     // Erase the big food and generate a new, normal food
+        //     GameApp.Instance.Display(" ",foodPosition.X, foodPosition.Y);
+        //     GenerateFood();
+        //     ResetFoodBar();
+        // }
 
-        // Add elapsed time after, so it is reflected in the next check
-        bigFoodTimerCountdown -= GameApp.Instance.DeltaTime;
+        // // Add elapsed time after, so it is reflected in the next check
+        // bigFoodTimerCountdown -= GameApp.Instance.DeltaTime;
     }
 
     void ResetFoodBar()
     {
-        bigFoodTimerCountdown = 5000;
-        GameApp.Instance.Display("________", GameApp.Instance.FoodBarGridPosition.X + 1, GameApp.Instance.FoodBarGridPosition.Y + 3, ConsoleColor.DarkGray);
+        // bigFoodTimerCountdown = 5000;
+        // GameApp.Instance.Display("________", GameApp.Instance.FoodBarGridPosition.X + 1, GameApp.Instance.FoodBarGridPosition.Y + 3, ConsoleColor.DarkGray);
     }
 
 
@@ -199,7 +199,7 @@ public class NewGameScene : Scene
 
         Thread.Sleep(1000);
 
-        GameApp.Instance.ClearGrid();
+        GameApp.Instance.ClearWindow();
         string gameover = " G A M E   O V E R! ";
         GameApp.Instance.Display(gameover, GameApp.Instance.CenterHorizontally(gameover), GameApp.Instance.CenterVertically(gameover), ConsoleColor.Green);
         

@@ -12,7 +12,7 @@ class MainScene : Scene
 
     public MainScene() 
     {
-        menuOptions = new KeyValuePair<SceneType, string>[5];
+        menuOptions = new KeyValuePair<SceneType, string>[6];
 
         // The keys are the type of Scene which they lead to
         menuOptions[0] = new (SceneType.NewGameScene, "Play");
@@ -20,6 +20,7 @@ class MainScene : Scene
         menuOptions[2] = new (SceneType.OptionsScene, "Options");
         menuOptions[3] = new (SceneType.HelpScene, "Help");
         menuOptions[4] = new (SceneType.AboutScene, "About");
+        menuOptions[5] = new (SceneType.Quit, "Quit");
 
         selector = new MenuOptionsSelector(menuOptions, menuOptionsColor, Console.BackgroundColor);
     }
@@ -50,11 +51,14 @@ class MainScene : Scene
 
         // Player selects the currrent option, tell the game app that a new scene is needed at the next frame update
         else if (input.Key == ConsoleKey.Spacebar)
-        {
+        { 
             // The bug is that RequestedSceneType and CurrentSceneType are the same after the game is over and the 
             // ui goes back to menu. As a result trying to load the NewGameScene using the method below, won't work.
 
-            GameApp.Instance.RequestedSceneType = selector.CurrentSelectedOption.Key;
+            if (selector.CurrentSelectedOption.Key != SceneType.Quit)
+                GameApp.Instance.RequestedSceneType = selector.CurrentSelectedOption.Key;
+            else
+                GameApp.Instance.QuitApplication = true;
         }
 
     }

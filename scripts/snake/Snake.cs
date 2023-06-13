@@ -55,19 +55,17 @@ public class Snake
         // Determine how the snake initailly appears at in the grid
         _Path = (Path)(random.Next() % 2);
 
-        int x;
-        int y;
+        int x = 0;
+        int y = 0;
         
         _Path = Path.Vertical;
 
         // The snake appears vertically
         if (_Path == Path.Vertical)
         {
-            x = (random.Next() % GameApp.Instance.GridSize.X) + 1;
-            // Documentation - 
-            if (x % 2 == 0) x = x + 1;
-
-            y = 0;
+            x = (random.Next() % Console.WindowWidth); 
+            
+            if (x % 2 != 0) x = x + 1;
 
             BodyCoordinates.AddLast(new Vector2(x, y + 1));
             BodyCoordinates.AddLast(new Vector2(x, y + 2));
@@ -76,12 +74,11 @@ public class Snake
         // The snake appears horizontally
         else
         {
-            x = 0;
-            y = (random.Next() % GameApp.Instance.GridSize.Y) + 1;
+            y = (random.Next() % Console.WindowHeight);
 
-            BodyCoordinates.AddLast(new Vector2(x + 1, y));
-            BodyCoordinates.AddLast(new Vector2(x + 3, y));
-            BodyCoordinates.AddLast(new Vector2(x + 5, y));
+            BodyCoordinates.AddLast(new Vector2(x + 0, y));
+            BodyCoordinates.AddLast(new Vector2(x + 2, y));
+            BodyCoordinates.AddLast(new Vector2(x + 4, y));
         }
 
         // Snake will always start at a positive direction towards a chosen Path
@@ -123,7 +120,6 @@ public class Snake
         // Add the new head
         BodyCoordinates.AddLast(head);
         GameApp.Instance.Display(body, head.X, head.Y, bodyColor);
-        Console.WriteLine(BodyCoordinates.Count);
     }
 
 
@@ -176,8 +172,8 @@ public class Snake
     private bool CollidesWithBounds()
     {
         return (_Path == Path.Vertical)? 
-            _Direction == Direction.Negative && Head.Y == VerticalBounds.X || (_Direction == Direction.Positive && Head.Y == VerticalBounds.Y) : 
-            _Direction == Direction.Negative && Head.X == HorizontalBounds.X || (_Direction == Direction.Positive && Head.X == HorizontalBounds.Y);
+            _Direction == Direction.Negative && Head.Y <= VerticalBounds.X || (_Direction == Direction.Positive && Head.Y >= VerticalBounds.Y) : 
+            _Direction == Direction.Negative && Head.X <= HorizontalBounds.X || (_Direction == Direction.Positive && Head.X >= HorizontalBounds.Y);
     }
 
     public void Reset()

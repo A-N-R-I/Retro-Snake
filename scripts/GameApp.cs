@@ -3,15 +3,6 @@ public class GameApp
 {
     public static GameApp Instance { get; private set; }
 
-    public Vector2 GridSize { get; private set; }
-    public Vector2 GridPosition { get; private set; }
-
-    public Vector2 ScoreGridSize { get; private set; }
-    public Vector2 ScoreGridPosition { get; private set; }
-
-    public Vector2 FoodBarGridSize { get; private set; }
-    public Vector2 FoodBarGridPosition { get; private set; }
-
     // Where the cursor should be taken back to by default
     Vector2 defaultCursorPosition;
 
@@ -35,6 +26,8 @@ public class GameApp
     public SceneType RequestedSceneType { get; set; }
     public SceneType CurrentSceneType { get; private set; }
 
+    public bool QuitApplication { get; set; }
+
 
     public Random Randomizer {get; private set; }
     public int DeltaTime { get; private set; }
@@ -42,19 +35,6 @@ public class GameApp
 
     private GameApp()
     {
-        GridSize = new Vector2(55, 27);
-
-        Vector2 position = new Vector2(Console.WindowWidth / 2 - GridSize.X / 2, Console.WindowHeight / 2 - GridSize.Y / 2);
-        
-        // Documentation
-        GridPosition = new Vector2(position.X % 2 == 0? position.X : position.X + 1, position.Y);
-
-        ScoreGridSize = new Vector2(10, 5);
-        ScoreGridPosition = new Vector2(GridSize.X + 2, 5);
-
-        FoodBarGridSize = ScoreGridSize;
-        FoodBarGridPosition = new Vector2(ScoreGridPosition.X, ScoreGridPosition.Y + ScoreGridSize.Y + 2);
-
         defaultCursorPosition = new Vector2(0, 0);
 
         scenes = new Stack<Scene>();
@@ -67,6 +47,7 @@ public class GameApp
         scenesBuffer.Add(SceneType.OptionsScene, new OptionsScene());
 
         ExitCurrentScene = false;
+        QuitApplication = false;
 
         Randomizer = new Random();
         
@@ -79,13 +60,11 @@ public class GameApp
 
     public void Run()
     {
-        DrawGrid();
-
         scenes.Push(scenesBuffer[SceneType.MainScene]);
         scenes.Peek().Init();
 
         // Game loop
-        while (true)
+        while (!QuitApplication)
         {
             if (exitCurrentScene)
                 LoadPrevScene();
@@ -102,7 +81,7 @@ public class GameApp
     public void LoadPrevScene()
     {
         scenes.Pop();
-        ClearGrid();
+        ClearWindow();
 
         // So the new scene is ready and shown
         scenes.Peek().Init();
@@ -115,7 +94,7 @@ public class GameApp
     public void LoadNewScene()
     {
         scenes.Push(scenesBuffer[RequestedSceneType]);
-        ClearGrid();
+        ClearWindow();
 
         // So the new scene is ready and shown
         scenes.Peek().Init();
@@ -123,79 +102,45 @@ public class GameApp
         CurrentSceneType = RequestedSceneType;
     }
 
-
-    public void DrawGrid()
-    {
-        int i;
-
-        // Draw the main grid
-        Display(' ' + new string('_', GridSize.X), 0, 0);
-
-        for (i = 1; i <= GridSize.Y; ++i)
-            Display('|' + new string(' ', GridSize.X) + '|', 0, i);
-
-        Display(' ' + new string('"', GridSize.X), 0, i);
-
-
-        DrawSideGrid("score", ScoreGridSize, ScoreGridPosition);
-        DrawSideGrid("food bar", FoodBarGridSize, FoodBarGridPosition);
-    }
-
-    public void DrawSideGrid(string name, Vector2 size, Vector2 position, ConsoleColor color = ConsoleColor.DarkCyan)
-    {
-        int i = 0;
-         // Draw the score grid
-        Display(new string('_', size.X), position.X, position.Y, color);
-
-        for (i = 1; i <= ScoreGridSize.Y; ++i)
-            Display(new string(' ', size.X) + '|', position.X, position.Y + i, color);
-
-        Display(name, position.X + size.X/2 - name.Length/2 , position.Y + 1, ConsoleColor.Green);
-        Display(new string('"', size.X), position.X, position.Y + 2, color);
-        Display(new string('"', size.X), position.X, position.Y + i, color);
-
-    }
-
-
     // Display to a particular position within the grid
     public void Display(object obj, int x, int y)
     {
-        Console.SetCursorPosition(GridPosition.X + x, GridPosition.Y + y);
+        Console.SetCursorPosition(x, y);
         Console.Write(obj);
         Console.SetCursorPosition(defaultCursorPosition.X, defaultCursorPosition.Y);
     }
 
-    // Display to a particular position  within the grid, with a particular color
+    // Display to a particular position with a particular color
     public void Display(object obj, int x, int y, ConsoleColor textColor)
     {
         var fgc = Console.ForegroundColor;
 
-        Console.SetCursorPosition(GridPosition.X  + x, GridPosition.Y + y);
+        Console.SetCursorPosition(x, y);
         Console.ForegroundColor = textColor;
         Console.Write(obj);
-        Console.SetCursorPosition(defaultCursorPosition.X, defaultCursorPosition.Y);
+        Console.SetCursorPosition(defaultCursorPosition.X, defaultCursorPosition.Y+1);
 
         Console.ForegroundColor = fgc;
     }
     
 
-    public void ClearGrid()
+    public void ClearWindow()
     {
-        for (int i = 1; i <= GridSize.Y; ++i)
-            Display(new string(' ', GridSize.X),1, i);
+        for (int i = 0; i < Console.WindowHeight; ++i)
+            Display(new string(' ', Console.WindowWidth), 1, i);
     }
 
 
     // Returns the X coordinate to start Displaying the content string from, at which it will be horizontally centered
     public int CenterHorizontally(string content)
     {
-        return GameApp.Instance.GridSize.X/2 - content.Length/2 + 1;
+        return Console.WindowWidth/2 - content.Length/2 + 1;
     }
 
     // Returns the Y coordinate to Display the content string, at which it will be vertically centered
     public int CenterVertically(string content)
     {
-        return GameApp.Instance.GridSize.Y/2;
+        return Console.WindowHeight/2;
     }
 
     public Vector2 Center(string content)

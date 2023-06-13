@@ -9,5 +9,6 @@ public enum SceneType
     ScoreScene = 12,
     OptionsScene = 15,
     HelpScene = 18,
-    AboutScene = 21
+    AboutScene = 21,
+    Quit = 24
 }
