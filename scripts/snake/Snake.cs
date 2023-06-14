@@ -4,7 +4,8 @@ public class Snake
     const char body = 'o';
 
     
-    const ConsoleColor bodyColor = ConsoleColor.Yellow;
+    const ConsoleColor bodyColor = ConsoleColor.Red;
+    public bool _BiteSelf { get; private set; }
 
     // Vertical or horizontal path
     public enum Path
@@ -21,20 +22,18 @@ public class Snake
     }
 
 
-    public Path _Path;
-    public Direction _Direction;
+    public Path _Path { get; set; }
+    public Direction _Direction {get; set; }
 
     public Vector2 VerticalBounds { get; set; }
     public Vector2 HorizontalBounds { get; set; }
 
     // Where each body part of the snake is located on the grid
-    public LinkedList<Vector2> BodyCoordinates {get; private set; }
-
+    public LinkedList<Vector2> BodyCoordinates { get; private set; }
     public Vector2 Head
     {
         get { return BodyCoordinates.Last(); }
     }
-
     public Vector2 Tail
     {
         get { return BodyCoordinates.First(); }
@@ -44,26 +43,24 @@ public class Snake
     public Snake()
     {
         BodyCoordinates = new LinkedList<Vector2>();
-        // Initinial positioning and length
-        Init();
     }
 
-    private void Init()
+
+    public void Init()
     {
         var random = GameApp.Instance.Randomizer;
 
         // Determine how the snake initailly appears at in the grid
         _Path = (Path)(random.Next() % 2);
+        _Direction = Direction.Positive;
 
         int x = 0;
         int y = 0;
-        
-        _Path = Path.Vertical;
 
         // The snake appears vertically
         if (_Path == Path.Vertical)
         {
-            x = (random.Next() % Console.WindowWidth); 
+            x = (random.Next() % (HorizontalBounds.Y - HorizontalBounds.X + 1)) + HorizontalBounds.X; // Range is between HorizontalBounds.X and HorizontalBounds.Y); 
             
             if (x % 2 != 0) x = x + 1;
 
@@ -74,15 +71,13 @@ public class Snake
         // The snake appears horizontally
         else
         {
-            y = (random.Next() % Console.WindowHeight);
+            y = (random.Next() % (VerticalBounds.Y - VerticalBounds.X + 1)) + VerticalBounds.X; // Range is between VerticalBounds.X and VerticalBounds.Y;
 
             BodyCoordinates.AddLast(new Vector2(x + 0, y));
             BodyCoordinates.AddLast(new Vector2(x + 2, y));
             BodyCoordinates.AddLast(new Vector2(x + 4, y));
         }
 
-        // Snake will always start at a positive direction towards a chosen Path
-        _Direction = Direction.Positive;
 
         // Display the snake
         foreach (var coord in BodyCoordinates)
@@ -94,13 +89,6 @@ public class Snake
     {
         Vector2 tail = new(this.Tail);
         Vector2 head = new(this.Head);
-
-        // Remove the old tail (By default it is removed)
-        if (eraseTail) 
-        {
-            GameApp.Instance.Display(" ", tail.X, tail.Y);
-            BodyCoordinates.RemoveFirst();
-        }
 
         if (!CollidesWithBounds())
         {
@@ -119,7 +107,18 @@ public class Snake
 
         // Add the new head
         BodyCoordinates.AddLast(head);
-        GameApp.Instance.Display(body, head.X, head.Y, bodyColor);
+
+        // Note that a new head will only be shown (and old tail removed) if the snake does not bite itself
+        if (!(_BiteSelf = BiteSelf()))
+        {
+            // Remove the old tail (By default it is removed)
+            if (eraseTail)
+            {
+                GameApp.Instance.Display(" ", tail.X, tail.Y);
+                BodyCoordinates.RemoveFirst();
+            }
+            GameApp.Instance.Display(body, head.X, head.Y, bodyColor);
+        }
     }
 
 
@@ -156,11 +155,11 @@ public class Snake
     }
 
 
-    public bool BiteSelf()
+    bool BiteSelf()
     {
         int index = 0;
 
-        // If the head's coordinate is found somewhere else other than the last position in the queue (Last because the head is the most recent element)
+        // If the head's coordinate is found somewhere else other than the last position in the list (Last because the head is the most recent element)
         foreach (var coord in BodyCoordinates)
             if (index++ < BodyCoordinates.Count-1 && coord.Equals(Head))
                 return true;
@@ -169,11 +168,11 @@ public class Snake
     }
 
 
-    private bool CollidesWithBounds()
+    bool CollidesWithBounds()
     {
         return (_Path == Path.Vertical)? 
-            _Direction == Direction.Negative && Head.Y <= VerticalBounds.X || (_Direction == Direction.Positive && Head.Y >= VerticalBounds.Y) : 
-            _Direction == Direction.Negative && Head.X <= HorizontalBounds.X || (_Direction == Direction.Positive && Head.X >= HorizontalBounds.Y);
+            _Direction == Direction.Negative && Head.Y == VerticalBounds.X || (_Direction == Direction.Positive && Head.Y == VerticalBounds.Y) : 
+            _Direction == Direction.Negative && Head.X == HorizontalBounds.X || (_Direction == Direction.Positive && Head.X == HorizontalBounds.Y);
     }
 
     public void Reset()

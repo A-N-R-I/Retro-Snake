@@ -69,7 +69,7 @@ class MenuOptionsSelector
 
     private void DeHighlightSelectedOption()
     {
-        string highlighText = " " + new string(' ', size) + CurrentSelectedOption.Value + new string(' ', size) + " ";
+        string highlighText = new string(' ', size) + CurrentSelectedOption.Value + new string(' ', size);
         GameApp.Instance.Display(highlighText, GameApp.Instance.CenterHorizontally(highlighText), (int)CurrentSelectedOption.Key, currentForegroundColor);
     }
 }

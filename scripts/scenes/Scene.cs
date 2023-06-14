@@ -1,5 +1,7 @@
 public abstract class Scene
 {
+    public SceneType _SceneType { get; protected set; }
+
     // Manually called by GameApp when the scene is to run
     public abstract void Init();
 
@@ -11,7 +13,12 @@ public abstract class Scene
     }
 
 
-    protected abstract void ProcessInput();
+    protected virtual void ProcessInput()
+    {
+        // Pressing the backspace key on any scene will automatically exit the current scene for the previous
+        if (GameApp.Instance.Input.Key == ConsoleKey.Backspace)
+            GameApp.Instance.ExitCurrentScene = true;
+    }
 
 
     public abstract void Update();

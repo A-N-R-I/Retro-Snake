@@ -23,6 +23,7 @@ public class GameApp
         }
     }
 
+    // Helps in switching between scenes
     public SceneType RequestedSceneType { get; set; }
     public SceneType CurrentSceneType { get; private set; }
 
@@ -38,16 +39,17 @@ public class GameApp
         defaultCursorPosition = new Vector2(0, 0);
 
         scenes = new Stack<Scene>();
-
         scenesBuffer = new Dictionary<SceneType, Scene>();
 
         // Sort of pre-loading the scenes
         scenesBuffer.Add(SceneType.MainScene, new MainScene());
         scenesBuffer.Add(SceneType.NewGameScene, new NewGameScene());
+        scenesBuffer.Add(SceneType.ScoreScene, new ScoreScene());
         scenesBuffer.Add(SceneType.OptionsScene, new OptionsScene());
+        scenesBuffer.Add(SceneType.HelpScene, new HelpScene());
+        scenesBuffer.Add(SceneType.AboutScene, new AboutScene());
 
-        ExitCurrentScene = false;
-        QuitApplication = false;
+        ExitCurrentScene = QuitApplication = false;
 
         Randomizer = new Random();
         
@@ -70,8 +72,9 @@ public class GameApp
                 LoadPrevScene();
 
             else if (RequestedSceneType != CurrentSceneType)
-                LoadNewScene();
+                LoadRequestedScene();
 
+            // Processing for the current running scene
             scenes.Peek().GetInput();
             scenes.Peek().Update();
         }
@@ -87,11 +90,11 @@ public class GameApp
         scenes.Peek().Init();
 
         exitCurrentScene = false;
-        // Whether to update current scene and requested scene (but they are already the same, just not referring to the actual scene type)
+        CurrentSceneType = RequestedSceneType = scenes.Peek()._SceneType;
     }
 
 
-    public void LoadNewScene()
+    public void LoadRequestedScene()
     {
         scenes.Push(scenesBuffer[RequestedSceneType]);
         ClearWindow();
@@ -127,7 +130,7 @@ public class GameApp
     public void ClearWindow()
     {
         for (int i = 0; i < Console.WindowHeight; ++i)
-            Display(new string(' ', Console.WindowWidth), 1, i);
+            Display(new string(' ', Console.WindowWidth), 0, i);
     }
 
 
@@ -141,10 +144,5 @@ public class GameApp
     public int CenterVertically(string content)
     {
         return Console.WindowHeight/2;
-    }
-
-    public Vector2 Center(string content)
-    {
-        return new Vector2(CenterHorizontally(content), CenterVertically(content));
     }
 }

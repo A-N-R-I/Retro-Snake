@@ -1,0 +1,7 @@
+Known Problems
+
+1. Fix it so the gameplay logic is not dependent on the window width being odd.
+2. Fix the bug in the Snake.Grow() method
+3. Do something about the issues that occur when the game window is resized (possibly, make it so it's not resizable)
+4. Minimizing the game and entering back into it does some weird stuff to he highlighter
+5. Consider Whether GameApp should remain a singleton

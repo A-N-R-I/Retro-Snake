@@ -10,10 +10,10 @@ public struct Vector2
         Y = y;
     }
 
-    public Vector2(Vector2 vector)
+    public Vector2(Vector2 copy)
     {
-        X = vector.X;
-        Y = vector.Y;
+        X = copy.X;
+        Y = copy.Y;
     }
 
     public override string ToString() => $"(x: {X}, y: {Y})";

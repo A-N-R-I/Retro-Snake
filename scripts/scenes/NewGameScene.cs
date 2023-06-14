@@ -2,12 +2,20 @@ public class NewGameScene : Scene
 {
     Snake snake;
 
-    // Fields relating to the food
-    const char foodNormal = 'o';
-    ConsoleColor foodNormalColor = ConsoleColor.Cyan;
+    
+    Vector2 boundsX;
+    Vector2 boundsY;
 
-    const char foodBig = '@';
-    ConsoleColor foodBigColor = ConsoleColor.Red;
+    Vector2 foodPosition;
+
+    // Fields relating to the food
+    const char food = 'o';
+    const char bigFood = '@';
+
+    string bigFoodBar = "__________";
+
+    ConsoleColor foodColor = ConsoleColor.Cyan;
+    ConsoleColor bigFoodColor = ConsoleColor.Yellow;
 
     int foodEatCount = 0;
 
@@ -16,22 +24,30 @@ public class NewGameScene : Scene
     int bigFoodPoints = 20;
 
     bool foodIsBig = false;
-
-    Vector2 foodPosition = new(0, 0);
-
+    
     uint score = 0;
 
 
-    public NewGameScene() {}
+    public NewGameScene() 
+    {
+        _SceneType = SceneType.NewGameScene;
+
+        boundsX = new Vector2(0, Console.WindowWidth - 1);
+        boundsY = new Vector2(0, Console.WindowHeight - 4);
+
+        snake = new Snake();
+
+        // Where the snake is not allowed to go beyond or at the point where it spawns at the opposite direction
+        snake.HorizontalBounds = boundsX;
+        snake.VerticalBounds =  boundsY;
+    }
 
 
     public override void Init()
     {
-        snake = new Snake();
+        snake.Init();
 
-        // Where the snake is not allowed to go beyond or at the point where it spawns at the opposite direction
-        snake.VerticalBounds =  new Vector2(0, Console.WindowHeight - 3);
-        snake.HorizontalBounds = new Vector2(0, Console.WindowWidth - 1);
+        DisplayUI();
 
         ResetFoodBar();
         GenerateFood();
@@ -46,46 +62,11 @@ public class NewGameScene : Scene
             GameApp.Instance.Input = Console.ReadKey();
     }
 
-    // Input processing, Score and other stuff
-    public override void Update()
-    {
-        ProcessInput();
-        snake.Move();
-
-        // Check if the snake eats the food
-        if (snake.Head.Equals(foodPosition))
-        {
-            // Snake has eaten a food. Only incrementing for normal food eaten
-            if (!foodIsBig)
-            {
-                 ++foodEatCount;
-                 ++score;
-                 IncreaseFoodBar();
-            } 
-            else
-            {
-                score += Convert.ToUInt32(bigFoodPoints * bigFoodTimerCountdown/bigFoodTimerLimit);
-                ResetFoodBar();
-            }
-
-            snake.Grow();
-            UpdateScore();
-            GenerateFood();
-        }
-
-        
-        if (foodIsBig) CountdownFoodBarTimer();
-
-        // End the game if the snake bits itsel. Else, continue
-        if (snake.BiteSelf()) 
-            GameOver();
-        else 
-            Thread.Sleep(GameApp.Instance.DeltaTime);
-    }
-
 
     protected override void ProcessInput()
     {
+        base.ProcessInput();
+        
         ConsoleKeyInfo input = GameApp.Instance.Input;
 
         // changing the Snakes's overall direction
@@ -133,7 +114,52 @@ public class NewGameScene : Scene
     }
     
 
-    private void GenerateFood()
+    // Input processing, Score and other stuff
+    public override void Update()
+    {
+        ProcessInput();
+        snake.Move();
+
+        // End the game if the snake bits itself
+        if (snake._BiteSelf) 
+            GameOver();
+        else
+        {
+            // Check if the snake eats the food
+            if (snake.Head.Equals(foodPosition))
+            {
+                // Snake has eaten a food. Only incrementing for normal food eaten
+                if (!foodIsBig)
+                {
+                    ++foodEatCount;
+                    ++score;
+                    IncreaseFoodBar();
+                }
+                else
+                {
+                    score += Convert.ToUInt32(bigFoodPoints * bigFoodTimerCountdown / bigFoodTimerLimit);
+                    ResetFoodBar();
+                }
+                snake.Grow();
+                UpdateScore();
+                GenerateFood();
+            }
+
+            if (foodIsBig) DecreaseFoodBar();
+
+            Thread.Sleep(GameApp.Instance.DeltaTime);
+        }
+    }
+
+
+    void DisplayUI()
+    {
+        GameApp.Instance.Display("Score", boundsX.X + 3, boundsY.Y + 1, ConsoleColor.Cyan);
+        GameApp.Instance.Display("@", boundsX.X + boundsX.Y - 20, boundsY.Y + 1, ConsoleColor.Yellow);
+    }
+    
+
+    void GenerateFood()
     {
         var random = GameApp.Instance.Randomizer;
         foodIsBig = !foodIsBig? foodEatCount > 0 && (foodEatCount % 5 == 0) : false;
@@ -142,54 +168,56 @@ public class NewGameScene : Scene
         do
         {
             foodPosition = new Vector2(0, 0);
-            foodPosition.X = (random.Next() % Console.WindowWidth); // Range is between 0 and Console.WindowWidth - 1;
+            foodPosition.X = (random.Next() % (boundsX.Y - boundsX.X + 1)) + boundsX.X; // Range is between boundsX.X and boundsX.Y
            
             if (foodPosition.X % 2 != 0) foodPosition.X = foodPosition.X + 1;
 
-            foodPosition.Y = (random.Next() % (Console.WindowHeight - 2));    // -2, So that the range will be between 0 and Console.WindowHeight - 3
+            foodPosition.Y = (random.Next() % (boundsY.Y - boundsY.X + 1)) + boundsY.X; // Range is between boundsY.X and boundsY.Y
         } 
         while (snake.BodyCoordinates.Contains(foodPosition));
         
         // Display new food
-        GameApp.Instance.Display(!foodIsBig? foodNormal : foodBig, foodPosition.X, foodPosition.Y, !foodIsBig? foodNormalColor : foodBigColor);
+        GameApp.Instance.Display(!foodIsBig? food : bigFood, foodPosition.X, foodPosition.Y, !foodIsBig? foodColor : bigFoodColor);
     }
 
 
     void UpdateScore()
     {
-
+        GameApp.Instance.Display($"  {score}", boundsX.X + 8, boundsY.Y + 1, ConsoleColor.Red);
     }
 
     
     void IncreaseFoodBar()
     {
-        // if (foodEatCount % 5 != 0)
-        //     GameApp.Instance.Display("__", GameApp.Instance.FoodBarGridPosition.X + 2*(foodEatCount % 5) - 1 , GameApp.Instance.FoodBarGridPosition.Y + 3, ConsoleColor.Red);
+        var rem = foodEatCount % 5;
+        var count = rem == 0? bigFoodBar.Length : 2 * rem;
+        
+        GameApp.Instance.Display(new string(bigFoodBar[0], count), boundsX.Y - 18, boundsY.Y + 1, ConsoleColor.Cyan);
     }
 
 
-    void CountdownFoodBarTimer()
+    void DecreaseFoodBar()
     {
-        // // Display the elapsed time
-        // GameApp.Instance.Display($" {(bigFoodTimerCountdown/1000.0):0.00}sec ", GameApp.Instance.FoodBarGridPosition.X + 1, GameApp.Instance.FoodBarGridPosition.Y + 3, bigFoodTimerCountdown >= 2000? ConsoleColor.Green : ConsoleColor.Red);
-        // if (bigFoodTimerCountdown <= 0)
-        // {
-        //     bigFoodTimerCountdown = bigFoodTimerLimit;
+        // Display the elapsed time
+        GameApp.Instance.Display($"{(bigFoodTimerCountdown/1000.0):0.00}sec    ", boundsX.Y - 18, boundsY.Y + 1, bigFoodTimerCountdown >= 2000? ConsoleColor.Cyan : ConsoleColor.Red);
+        if (bigFoodTimerCountdown <= 0)
+        {
+            bigFoodTimerCountdown = bigFoodTimerLimit;
 
-        //     // Erase the big food and generate a new, normal food
-        //     GameApp.Instance.Display(" ",foodPosition.X, foodPosition.Y);
-        //     GenerateFood();
-        //     ResetFoodBar();
-        // }
+            // Erase the big food and generate a new, normal food
+            GameApp.Instance.Display(" ",foodPosition.X, foodPosition.Y);
+            GenerateFood();
+            ResetFoodBar();
+        }
 
-        // // Add elapsed time after, so it is reflected in the next check
-        // bigFoodTimerCountdown -= GameApp.Instance.DeltaTime;
+        // Add elapsed time after, so it is reflected in the next check
+        bigFoodTimerCountdown -= GameApp.Instance.DeltaTime;
     }
 
     void ResetFoodBar()
     {
-        // bigFoodTimerCountdown = 5000;
-        // GameApp.Instance.Display("________", GameApp.Instance.FoodBarGridPosition.X + 1, GameApp.Instance.FoodBarGridPosition.Y + 3, ConsoleColor.DarkGray);
+        bigFoodTimerCountdown = 5000;
+        GameApp.Instance.Display("__________", boundsX.Y - 18, boundsY.Y + 1, ConsoleColor.DarkGray);
     }
 
 
@@ -200,8 +228,20 @@ public class NewGameScene : Scene
         Thread.Sleep(1000);
 
         GameApp.Instance.ClearWindow();
-        string gameover = " G A M E   O V E R! ";
-        GameApp.Instance.Display(gameover, GameApp.Instance.CenterHorizontally(gameover), GameApp.Instance.CenterVertically(gameover), ConsoleColor.Green);
+
+
+        // https://patorjk.com/software/taag/#p=display&v=1&f=Cybersmall&t=game%20over!
+        
+        string game = @"
+                    ____ ____ _  _ ____  
+                    |__, |--| |\/| |===  ";
+        string over = @"
+                    ____ _  _ ____ ____ /
+                    [__]  \/  |=== |--<. ";
+                    
+
+        GameApp.Instance.Display(game, GameApp.Instance.CenterHorizontally("gggg aaaa mmmm eeee"), GameApp.Instance.CenterVertically(game)-5, ConsoleColor.Cyan);
+        GameApp.Instance.Display(over, GameApp.Instance.CenterHorizontally("oooo vvvv eeee rrrr"), GameApp.Instance.CenterVertically(over)-2, ConsoleColor.Red);
         
         if (score > gameData.HighScore) gameData.HighScore = score;
         
@@ -211,9 +251,10 @@ public class NewGameScene : Scene
 
         Thread.Sleep(2000);
 
+        // Reset gameplay data
         ResetFoodBar();
+        foodEatCount = 0;
         score = 0;
-        UpdateScore();
 
         GameApp.Instance.ExitCurrentScene = true;
     }

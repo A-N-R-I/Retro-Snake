@@ -10,8 +10,18 @@ class MainScene : Scene
     MenuOptionsSelector selector;
 
 
+    string retro = @"
+               ____ ____ ___ ____ ____
+               |--< |===  |  |--< [__]";
+    string snake = @" 
+                        ____ __ _ ____ _  _ ____
+                        ==== | \| |--| |-:_ |===";
+
+
     public MainScene() 
     {
+        _SceneType = SceneType.MainScene;
+        
         menuOptions = new KeyValuePair<SceneType, string>[6];
 
         // The keys are the type of Scene which they lead to
@@ -28,19 +38,14 @@ class MainScene : Scene
 
     public override void Init()
     {
-        DisplayMenuOptions();
-    }
-
-
-    public override void Update()
-    {
-        ProcessInput();
-        // Sleep() not needed because the console waits for input in each frame
+        DisplayUI();
     }
 
 
     protected override void ProcessInput()
     {
+        base.ProcessInput();
+        
         ConsoleKeyInfo input = GameApp.Instance.Input;
 
         // Move the selector up and down
@@ -62,20 +67,27 @@ class MainScene : Scene
         }
 
     }
+    
 
-
-    private void DisplayMenuOptions()
+    public override void Update()
     {
-        var text = " R E T R O   S N A K E ";
-        GameApp.Instance.Display(text, GameApp.Instance.CenterHorizontally(text), 3, ConsoleColor.Green);
+        ProcessInput();
+        // Sleep() not needed because the console waits for input in each frame
+    }
+
+
+    void DisplayUI()
+    {
+        GameApp.Instance.Display(retro, GameApp.Instance.CenterHorizontally("rrrr eeee tttt rrrr oooo") + 5, 1, ConsoleColor.Cyan);
+        GameApp.Instance.Display(snake, GameApp.Instance.CenterHorizontally("ssss nnnn aaaa kkkk eeee"), 4, ConsoleColor.Red);
 
         foreach (var pair in menuOptions)
         {
             GameApp.Instance.Display(pair.Value, GameApp.Instance.CenterHorizontally(pair.Value),(int)pair.Key, menuOptionsColor);
         }
 
-        text = "Press space to select";
-        GameApp.Instance.Display(text, GameApp.Instance.CenterHorizontally(text), (int)menuOptions.Last().Key + 4, ConsoleColor.DarkGray);
+        var text = "Press space to select";
+        GameApp.Instance.Display(text, GameApp.Instance.CenterHorizontally(text), (int)menuOptions.Last().Key + 5, ConsoleColor.Red);
 
         // Highlight a default option
         selector.HighlightCurrentSelectedOption();
