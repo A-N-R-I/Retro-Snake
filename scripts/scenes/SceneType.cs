@@ -1,7 +1,7 @@
 // Denotes the type of scene
 
-// These values are deliberately assigned in such a manner to favour the MainScene. The values represent the row in the main scene
-// where the coresponding options will be placed
+// These values are deliberately assigned in such a manner to favourcorresponding the MainScene. The values represent the row in the main scene
+// where the corresponding options will be placed
 public enum SceneType
 {
     MainScene = -1, // Not in the main scene, since it is the main scene itself
