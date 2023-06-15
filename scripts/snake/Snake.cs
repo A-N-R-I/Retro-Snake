@@ -108,7 +108,7 @@ public class Snake
         // Add the new head
         BodyCoordinates.AddLast(head);
 
-        // Note that a new head will only be shown (and old tail removed) if the snake does not bite itself
+        // A new head will only be shown (and old tail removed) if the snake does not bite itself
         if (!(_BiteSelf = BiteSelf()))
         {
             // Remove the old tail (By default it is removed)
