@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "7lj/7EovrAH5ziq/+hblBHkQi4up1MRN9HaLNN0EqX1v/zUaM98Bq8xoySBnCFK9F1cIMlnu3+TyGG3vjFuQTw==",
+  "dgSpecHash": "uQhvn/YtwbLPDOPkWJ61FqbOZPFWJaCditzfMRgCLmefI2cwlTOozughQtPlW2yS1XxHeuvxA7IebFBYRoCuQg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\Development\\CS\\Retro-Snake\\Retro-Snake.csproj",
+  "projectFilePath": "C:\\Users\\user\\Development\\CSharp\\.NET Core\\Retro-Snake\\Retro-Snake.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

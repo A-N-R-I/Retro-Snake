@@ -1,10 +1,14 @@
+using System;
+using System.Collections.Generic;
+
+
 // Handles highlighting menu items and helps with selection
 
 class MenuOptionsSelector
 {
     // The various scene types and the menu options which lead to them
     KeyValuePair<SceneType, string>[] options;
-    
+
     public KeyValuePair<SceneType, string> CurrentSelectedOption { get; private set; }
 
     ConsoleColor highlightorColor;
@@ -37,8 +41,8 @@ class MenuOptionsSelector
         string highlighText = new string(' ', size) + CurrentSelectedOption.Value + new string(' ', size);
 
         Console.BackgroundColor = highlightorColor;
-        GameApp.Instance.Display(highlighText, GameApp.Instance.CenterHorizontally(highlighText), (int)CurrentSelectedOption.Key,foregroundColor);
-        
+        GameApp.Instance.Display(highlighText, GameApp.Instance.CenterHorizontally(highlighText), (int)CurrentSelectedOption.Key, foregroundColor);
+
         Console.BackgroundColor = currentBackgroundColor;
     }
 
@@ -54,7 +58,7 @@ class MenuOptionsSelector
         else --index;
     }
 
-    
+
     public void HighlightPrevOption()
     {
         if (--index >= 0)

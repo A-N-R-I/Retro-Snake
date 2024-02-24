@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+
+
 // Singleton
 public class GameApp
 {
@@ -11,15 +15,15 @@ public class GameApp
 
     private Stack<Scene> scenes;    // currently running scenes 
     private Dictionary<SceneType, Scene> scenesBuffer;  // All the scenes of the game, preloaded (The actual scene objects)
-    
+
     private bool exitCurrentScene;
-    public bool ExitCurrentScene 
-    { 
+    public bool ExitCurrentScene
+    {
         get { return exitCurrentScene; }
         set
         {
             // If it is requested to exit a scene, we must make sure there is at least one scene running (i.e the main scene)
-            exitCurrentScene = (scenes.Count > 1)? value : false;
+            exitCurrentScene = (scenes.Count > 1) ? value : false;
         }
     }
 
@@ -30,7 +34,7 @@ public class GameApp
     public bool QuitApplication { get; set; }
 
 
-    public Random Randomizer {get; private set; }
+    public Random Randomizer { get; private set; }
     public int DeltaTime { get; private set; }
 
 
@@ -52,7 +56,7 @@ public class GameApp
         ExitCurrentScene = QuitApplication = false;
 
         Randomizer = new Random();
-        
+
         DeltaTime = Convert.ToInt32(Database._GameData.Level);
     }
 
@@ -121,11 +125,11 @@ public class GameApp
         Console.SetCursorPosition(x, y);
         Console.ForegroundColor = textColor;
         Console.Write(obj);
-        Console.SetCursorPosition(defaultCursorPosition.X, defaultCursorPosition.Y+1);
+        Console.SetCursorPosition(defaultCursorPosition.X, defaultCursorPosition.Y + 1);
 
         Console.ForegroundColor = fgc;
     }
-    
+
 
     public void ClearWindow()
     {
@@ -137,12 +141,12 @@ public class GameApp
     // Returns the X coordinate to start Displaying the content string from, at which it will be horizontally centered
     public int CenterHorizontally(string content)
     {
-        return Console.WindowWidth/2 - content.Length/2 + 1;
+        return Console.WindowWidth / 2 - content.Length / 2 + 1;
     }
 
     // Returns the Y coordinate to Display the content string, at which it will be vertically centered
     public int CenterVertically(string content)
     {
-        return Console.WindowHeight/2;
+        return Console.WindowHeight / 2;
     }
 }
