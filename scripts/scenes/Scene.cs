@@ -1,3 +1,6 @@
+using System;
+
+
 public abstract class Scene
 {
     public SceneType _SceneType { get; protected set; }

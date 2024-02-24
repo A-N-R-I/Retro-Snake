@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+
 class MainScene : Scene
 {
 
@@ -18,19 +23,19 @@ class MainScene : Scene
                         ==== | \| |--| |-:_ |===";
 
 
-    public MainScene() 
+    public MainScene()
     {
         _SceneType = SceneType.MainScene;
-        
+
         menuOptions = new KeyValuePair<SceneType, string>[6];
 
         // The keys are the type of Scene which they lead to
-        menuOptions[0] = new (SceneType.NewGameScene, "Play");
-        menuOptions[1] = new (SceneType.ScoreScene, "Score");
-        menuOptions[2] = new (SceneType.OptionsScene, "Options");
-        menuOptions[3] = new (SceneType.HelpScene, "Help");
-        menuOptions[4] = new (SceneType.AboutScene, "About");
-        menuOptions[5] = new (SceneType.Quit, "Quit");
+        menuOptions[0] = new(SceneType.NewGameScene, "Play");
+        menuOptions[1] = new(SceneType.ScoreScene, "Score");
+        menuOptions[2] = new(SceneType.OptionsScene, "Options");
+        menuOptions[3] = new(SceneType.HelpScene, "Help");
+        menuOptions[4] = new(SceneType.AboutScene, "About");
+        menuOptions[5] = new(SceneType.Quit, "Quit");
 
         selector = new MenuOptionsSelector(menuOptions, menuOptionsColor, Console.BackgroundColor);
     }
@@ -45,7 +50,7 @@ class MainScene : Scene
     protected override void ProcessInput()
     {
         base.ProcessInput();
-        
+
         ConsoleKeyInfo input = GameApp.Instance.Input;
 
         // Move the selector up and down
@@ -56,7 +61,7 @@ class MainScene : Scene
 
         // Player selects the currrent option, tell the game app that a new scene is needed at the next frame update
         else if (input.Key == ConsoleKey.Spacebar)
-        { 
+        {
             // The bug is that RequestedSceneType and CurrentSceneType are the same after the game is over and the 
             // ui goes back to menu. As a result trying to load the NewGameScene using the method below, won't work.
 
@@ -67,7 +72,7 @@ class MainScene : Scene
         }
 
     }
-    
+
 
     public override void Update()
     {
@@ -83,7 +88,7 @@ class MainScene : Scene
 
         foreach (var pair in menuOptions)
         {
-            GameApp.Instance.Display(pair.Value, GameApp.Instance.CenterHorizontally(pair.Value),(int)pair.Key, menuOptionsColor);
+            GameApp.Instance.Display(pair.Value, GameApp.Instance.CenterHorizontally(pair.Value), (int)pair.Key, menuOptionsColor);
         }
 
         var text = "Press space to select";

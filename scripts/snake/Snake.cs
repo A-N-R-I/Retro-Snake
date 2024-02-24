@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+
 public class Snake
 {
     // The basic build-up of the snake's body
     const char body = 'o';
 
-    
+
     const ConsoleColor bodyColor = ConsoleColor.Red;
     public bool _BiteSelf { get; private set; }
 
@@ -23,7 +28,7 @@ public class Snake
 
 
     public Path _Path { get; set; }
-    public Direction _Direction {get; set; }
+    public Direction _Direction { get; set; }
 
     public Vector2 VerticalBounds { get; set; }
     public Vector2 HorizontalBounds { get; set; }
@@ -32,11 +37,11 @@ public class Snake
     public LinkedList<Vector2> BodyCoordinates { get; private set; }
     public Vector2 Head
     {
-        get { return BodyCoordinates.Last(); }
+        get { return BodyCoordinates.Last.Value; }
     }
     public Vector2 Tail
     {
-        get { return BodyCoordinates.First(); }
+        get { return BodyCoordinates.First.Value; }
     }
 
 
@@ -61,7 +66,7 @@ public class Snake
         if (_Path == Path.Vertical)
         {
             x = (random.Next() % (HorizontalBounds.Y - HorizontalBounds.X + 1)) + HorizontalBounds.X; // Range is between HorizontalBounds.X and HorizontalBounds.Y); 
-            
+
             if (x % 2 != 0) x = x + 1;
 
             BodyCoordinates.AddLast(new Vector2(x, y + 1));
@@ -100,9 +105,9 @@ public class Snake
         else
         {
             if (_Path == Path.Vertical)
-                head.Y = (_Direction == Direction.Positive)? VerticalBounds.X : VerticalBounds.Y;
+                head.Y = (_Direction == Direction.Positive) ? VerticalBounds.X : VerticalBounds.Y;
             else
-                head.X = (_Direction == Direction.Positive)? HorizontalBounds.X : HorizontalBounds.Y;
+                head.X = (_Direction == Direction.Positive) ? HorizontalBounds.X : HorizontalBounds.Y;
         }
 
         // Add the new head
@@ -129,10 +134,10 @@ public class Snake
         Vector2 newTail = new(Tail.X, Tail.Y);
 
         // Handle positioning for normal conditions
-        int sign = preTail.X > Tail.X? -1 : (preTail.X < Tail.X? 1 : 0);
-        newTail.X += 2*sign;
+        int sign = preTail.X > Tail.X ? -1 : (preTail.X < Tail.X ? 1 : 0);
+        newTail.X += 2 * sign;
 
-        sign = preTail.Y > Tail.Y? -1 : (preTail.Y < Tail.Y? 1 : 0);
+        sign = preTail.Y > Tail.Y ? -1 : (preTail.Y < Tail.Y ? 1 : 0);
         newTail.Y += sign;
 
         // Now check if this isn't a normal condition so as to negate the sign 
@@ -161,7 +166,7 @@ public class Snake
 
         // If the head's coordinate is found somewhere else other than the last position in the list (Last because the head is the most recent element)
         foreach (var coord in BodyCoordinates)
-            if (index++ < BodyCoordinates.Count-1 && coord.Equals(Head))
+            if (index++ < BodyCoordinates.Count - 1 && coord.Equals(Head))
                 return true;
 
         return false;
@@ -170,8 +175,8 @@ public class Snake
 
     bool CollidesWithBounds()
     {
-        return (_Path == Path.Vertical)? 
-            _Direction == Direction.Negative && Head.Y == VerticalBounds.X || (_Direction == Direction.Positive && Head.Y == VerticalBounds.Y) : 
+        return (_Path == Path.Vertical) ?
+            _Direction == Direction.Negative && Head.Y == VerticalBounds.X || (_Direction == Direction.Positive && Head.Y == VerticalBounds.Y) :
             _Direction == Direction.Negative && Head.X == HorizontalBounds.X || (_Direction == Direction.Positive && Head.X == HorizontalBounds.Y);
     }
 
