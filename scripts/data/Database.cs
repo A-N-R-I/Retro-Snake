@@ -3,7 +3,7 @@
 static class Database
 {
 
-    public static GameData _GameData { get; private set; }
+    public static GameData _GameData { get; }
 
     static Database()
     {

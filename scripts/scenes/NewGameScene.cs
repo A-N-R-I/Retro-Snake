@@ -118,40 +118,49 @@ public class NewGameScene : Scene
     }
 
 
+
     // Input processing, Score and other stuff
     public override void Update()
     {
         ProcessInput();
-        snake.Move();
 
-        // End the game if the snake bits itself
-        if (snake._BiteSelf)
-            GameOver();
+        if (!GameApp.Instance.ExitCurrentScene)
+        {
+            snake.Move();
+
+            // End the game if the snake bits itself
+            if (snake._BiteSelf)
+                GameOver();
+            else
+            {
+                // Check if the snake eats the food
+                if (snake.Head.Equals(foodPosition))
+                {
+                    // Snake has eaten a food. Only incrementing for normal food eaten
+                    if (!foodIsBig)
+                    {
+                        ++foodEatCount;
+                        ++score;
+                        IncreaseFoodBar();
+                    }
+                    else
+                    {
+                        score += Convert.ToUInt32(bigFoodPoints * bigFoodTimerCountdown / bigFoodTimerLimit);
+                        ResetFoodBar();
+                    }
+                    snake.Grow();
+                    UpdateScore();
+                    GenerateFood();
+                }
+
+                if (foodIsBig) DecreaseFoodBar();
+
+                Thread.Sleep(GameApp.Instance.DeltaTime);
+            }
+        }
         else
         {
-            // Check if the snake eats the food
-            if (snake.Head.Equals(foodPosition))
-            {
-                // Snake has eaten a food. Only incrementing for normal food eaten
-                if (!foodIsBig)
-                {
-                    ++foodEatCount;
-                    ++score;
-                    IncreaseFoodBar();
-                }
-                else
-                {
-                    score += Convert.ToUInt32(bigFoodPoints * bigFoodTimerCountdown / bigFoodTimerLimit);
-                    ResetFoodBar();
-                }
-                snake.Grow();
-                UpdateScore();
-                GenerateFood();
-            }
-
-            if (foodIsBig) DecreaseFoodBar();
-
-            Thread.Sleep(GameApp.Instance.DeltaTime);
+            snake.Reset();
         }
     }
 
@@ -165,7 +174,7 @@ public class NewGameScene : Scene
 
     void GenerateFood()
     {
-        var random = GameApp.Instance.Randomizer;
+        Random random = GameApp.Instance.Randomizer;
         foodIsBig = !foodIsBig ? foodEatCount > 0 && (foodEatCount % 5 == 0) : false;
 
         // Keep generating a coordinate until one is found which doesn't collide with the snake
@@ -227,7 +236,7 @@ public class NewGameScene : Scene
 
     void GameOver()
     {
-        var gameData = Database._GameData;
+        GameData gameData = Database._GameData;
 
         Thread.Sleep(1000);
 

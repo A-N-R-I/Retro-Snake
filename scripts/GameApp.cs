@@ -23,7 +23,7 @@ public class GameApp
         set
         {
             // If it is requested to exit a scene, we must make sure there is at least one scene running (i.e the main scene)
-            exitCurrentScene = (scenes.Count > 1) ? value : false;
+            exitCurrentScene = (scenes.Count > 1) && value;
         }
     }
 
@@ -131,11 +131,7 @@ public class GameApp
     }
 
 
-    public void ClearWindow()
-    {
-        for (int i = 0; i < Console.WindowHeight; ++i)
-            Display(new string(' ', Console.WindowWidth), 0, i);
-    }
+    public void ClearWindow() => Console.Clear();
 
 
     // Returns the X coordinate to start Displaying the content string from, at which it will be horizontally centered

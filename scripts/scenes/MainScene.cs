@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+
 
 class MainScene : Scene
 {
 
     KeyValuePair<SceneType, string>[] menuOptions;
-    // string[] playOptions = {"New Game", "Continue"};
+
     ConsoleColor menuOptionsColor = ConsoleColor.Cyan;
 
 
@@ -15,10 +14,10 @@ class MainScene : Scene
     MenuOptionsSelector selector;
 
 
-    string retro = @"
+    readonly string retro = @"
                ____ ____ ___ ____ ____
                |--< |===  |  |--< [__]";
-    string snake = @" 
+    readonly string snake = @" 
                         ____ __ _ ____ _  _ ____
                         ==== | \| |--| |-:_ |===";
 
@@ -27,15 +26,16 @@ class MainScene : Scene
     {
         _SceneType = SceneType.MainScene;
 
-        menuOptions = new KeyValuePair<SceneType, string>[6];
-
         // The keys are the type of Scene which they lead to
-        menuOptions[0] = new(SceneType.NewGameScene, "Play");
-        menuOptions[1] = new(SceneType.ScoreScene, "Score");
-        menuOptions[2] = new(SceneType.OptionsScene, "Options");
-        menuOptions[3] = new(SceneType.HelpScene, "Help");
-        menuOptions[4] = new(SceneType.AboutScene, "About");
-        menuOptions[5] = new(SceneType.Quit, "Quit");
+        menuOptions = new KeyValuePair<SceneType, string>[]
+        {
+            new(SceneType.NewGameScene, "Play"),
+            new(SceneType.ScoreScene, "Score"),
+            new(SceneType.OptionsScene, "Options"),
+            new(SceneType.HelpScene, "Help"),
+            new(SceneType.AboutScene, "About"),
+            new(SceneType.Quit, "Quit"),
+        };
 
         selector = new MenuOptionsSelector(menuOptions, menuOptionsColor, Console.BackgroundColor);
     }
@@ -92,7 +92,7 @@ class MainScene : Scene
         }
 
         var text = "Press space to select";
-        GameApp.Instance.Display(text, GameApp.Instance.CenterHorizontally(text), (int)menuOptions.Last().Key + 5, ConsoleColor.Red);
+        GameApp.Instance.Display(text, GameApp.Instance.CenterHorizontally(text), (int)menuOptions[menuOptions.Length - 1].Key + 5, ConsoleColor.Red);
 
         // Highlight a default option
         selector.HighlightCurrentSelectedOption();

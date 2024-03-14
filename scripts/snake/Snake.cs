@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 
 public class Snake
@@ -130,7 +129,7 @@ public class Snake
     // Basically adds a new tail behind the old tail
     public void Grow()
     {
-        Vector2 preTail = BodyCoordinates.ElementAt(1);
+        Vector2 preTail = BodyCoordinates.First.Next.Value;
         Vector2 newTail = new(Tail.X, Tail.Y);
 
         // Handle positioning for normal conditions
